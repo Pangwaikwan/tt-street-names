@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hong Kong Street-Name Translation — Corpus Explorer</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+<header class="site">
+  <h1 data-en="Hong Kong Street-Name Translation" data-zh="香港街名翻譯">Hong Kong Street-Name Translation</h1>
+  <p class="subtitle" data-en="Translation Technology Final Project · Topic #26 · Pang Wai Kwan" data-zh="Translation Technology Final Project · 題目 #26 · Pang Wai Kwan">Translation Technology Final Project · Topic #26 · Pang Wai Kwan</p>
+  <nav class="top">
+    <a href="index.html" class="active" data-en="Explorer" data-zh="語料瀏覽">Explorer</a>
+    <a href="codebook.html" data-en="Codebook" data-zh="Codebook">Codebook</a>
+    <a href="report.html" data-en="Report" data-zh="報告">Report</a>
+    <button class="lang-btn" id="langBtn" type="button">繁體中文</button>
+  </nav>
+</header>
+
+<main id="explorer">
+  <div class="card">
+    <h2 data-en="Corpus explorer" data-zh="語料瀏覽">Corpus explorer</h2>
+    <p data-en="500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid." data-zh="由地政總署 Road Centreline（CSDI / data.gov.hk，2026 年 11 月 19 日擷取）4,568 條有齊中英文名嘅街入面，固定隨機種子 20261205 抽出嘅 500 條街名。每條都用四分類 codebook 編碼：音譯、直譯、意譯、混合。">500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid.</p>
+    <p class="muted" data-en="Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update." data-zh="撳任何一條 bar、donut 其中一格、legend 或者 heatmap 格仔，就可以篩選下面個表。改 search 或者篩選，三幅圖會一齊更新。">Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update.</p>
+  </div>
+
+  <div class="card" id="loadError" style="display:none">
+    <p><strong data-en="The corpus data did not load." data-zh="語料載入失敗。">The corpus data did not load.</strong></p>
+    <p data-en="Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly." data-zh="請用 http(s) 開呢個網站（例如經 GitHub Pages），唔好直接撳開個檔案。">Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly.</p>
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <input type="search" id="searchBox" data-en-ph="Search Chinese or English name…" data-zh-ph="搜尋中文或者英文街名…" placeholder="Search Chinese or English name…">
+      <select id="checkedFilter" aria-label="Human checked">
+        <option value="all" data-en="Checked: all" data-zh="已核對：全部">Checked: all</option>
+        <option value="yes" data-en="Checked: yes" data-zh="已核對：係">Checked: yes</option>
+        <option value="no" data-en="Checked: no" data-zh="已核對：未">Checked: no</option>
+      </select>
+      <button class="btn" id="clearBtn" type="button" data-en="Clear filters" data-zh="清除篩選">Clear filters</button>
+    </div>
+    <div class="controls" style="margin-top:12px">
+      <button class="chip active" type="button" data-cat="all" data-en="All" data-zh="全部">All</button>
+      <button class="chip" type="button" data-cat="音譯" data-en="Transliteration" data-zh="音譯">Transliteration</button>
+      <button class="chip" type="button" data-cat="直譯" data-en="Literal" data-zh="直譯">Literal</button>
+      <button class="chip" type="button" data-cat="意譯" data-en="Free" data-zh="意譯">Free</button>
+      <button class="chip" type="button" data-cat="混合" data-en="Hybrid" data-zh="混合">Hybrid</button>
+    </div>
+    <p class="muted" id="resultCount" style="margin-top:12px"></p>
+    <p class="small" data-en="Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes." data-zh="已核對狀態：50 條 quality check 未做，所以而家全部顯示「–」。核對完 mark 咗 yes 之後，呢個篩選就會有作用。">Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes.</p>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h2 data-en="Entries by category" data-zh="每類有幾多條">Entries by category</h2>
+      <div id="barChart"></div>
+    </div>
+    <div class="chart-card">
+      <h2 data-en="Share by category" data-zh="每類佔幾多">Share by category</h2>
+      <div id="donutChart" class="donut-wrap"></div>
+    </div>
+    <div class="chart-card full">
+      <h2 data-en="Category × street type" data-zh="分類 × 道路類別">Category × street type</h2>
+      <p class="muted" data-en="Counts of the entries currently shown. Street type comes from the Road Centreline record." data-zh="而家顯示緊嗰啲條目嘅數目。道路類別嚟自 Road Centreline 原記錄。">Counts of the entries currently shown. Street type comes from the Road Centreline record.</p>
+      <div id="heatmap"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 data-en="Entries" data-zh="條目">Entries</h2>
+    <div class="table-scroll">
+      <table class="data">
+        <thead><tr>
+          <th>ID</th>
+          <th data-en="Chinese name" data-zh="中文街名">Chinese name</th>
+          <th data-en="English name" data-zh="英文街名">English name</th>
+          <th data-en="Category" data-zh="分類">Category</th>
+          <th data-en="Street type" data-zh="道路類別">Street type</th>
+          <th data-en="Checked" data-zh="已核對">Checked</th>
+          <th data-en="Confidence" data-zh="信心">Confidence</th>
+        </tr></thead>
+        <tbody id="corpusBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <p data-en="Source: Lands Department Road Centreline, via CSDI / data.gov.hk (ArcGIS REST), retrieved 19 November 2026. Sample: random.Random(20261205), population sorted by STREETCODE. Codebook v0.2. Draft coding, 19 November 2026." data-zh="來源：地政總署 Road Centreline，經 CSDI / data.gov.hk（ArcGIS REST），2026 年 11 月 19 日擷取。抽樣：random.Random(20261205)，population 先按 STREETCODE 排序。Codebook v0.2。Draft coding，2026 年 11 月 19 日。">Source: Lands Department Road Centreline, via CSDI / data.gov.hk (ArcGIS REST), retrieved 19 November 2026. Sample: random.Random(20261205), population sorted by STREETCODE. Codebook v0.2. Draft coding, 19 November 2026.</p>
+</footer>
+</div>
+</body>
+</html>
