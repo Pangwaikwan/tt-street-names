@@ -6,7 +6,7 @@ Static site (HTML + CSS + JS + one JSON data file). No build step, no server.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | Corpus explorer: search, category + human\_checked filters, 3 linked visualisations (bar chart, donut, category × street-type heatmap), full 500-entry table |
+| `index.html` | Corpus explorer: search, category + human\_checked filters, 5 linked visualisations (bar chart, donut, category × street-type heatmap, treemap, word cloud), full 500-entry table with sorting and CSV export |
 | `codebook.html` | Codebook v0.2 (definitions are **DRAFT** — rewrite in your own words, brief 0.3.3) |
 | `report.html` | Learning report (draft): method, results, change log, QC status, AI declaration. §4 "What I learned" is a placeholder for you to write |
 | `style.css` | Shared styles |

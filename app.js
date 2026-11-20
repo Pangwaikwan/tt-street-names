@@ -14,7 +14,7 @@ var TYPE_ZH = {
 };
 
 var DATA = null;
-var state = { q: '', cat: 'all', checked: 'all' };
+var state = { q: '', cat: 'all', checked: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
 var lang = 'en';
 try { lang = localStorage.getItem('tt-lang') || 'en'; } catch (e) { lang = 'en'; }
 
@@ -56,11 +56,94 @@ function heatmapMatrix(entries) {
   });
   return m;
 }
+var GENERIC_EN = ['ROAD', 'STREET', 'LANE', 'PATH', 'TERRACE', 'DRIVE', 'AVENUE', 'CRESCENT', 'CIRCLE', 'PLACE', 'SQUARE', 'COURT', 'BOULEVARD', 'RUE', 'NORTH', 'SOUTH', 'EAST', 'WEST', 'CENTRAL', 'NO', 'DE', 'SECTION', 'TH', 'ND', 'RD', 'ST']; // last four: fragments of ordinals (4TH, 2ND, 3RD, 1ST)
+function wordFreq(entries) {
+  var freq = {};
+  entries.forEach(function (e) {
+    e.en.toUpperCase().split(/[^A-Z]+/).forEach(function (w) {
+      if (!w || w.length < 2 || GENERIC_EN.indexOf(w) !== -1) return;
+      freq[w] = (freq[w] || 0) + 1;
+    });
+  });
+  return Object.keys(freq).map(function (w) { return { word: w, n: freq[w] }; })
+    .sort(function (a, b) { return b.n - a.n || (a.word < b.word ? -1 : 1); });
+}
+function treemapCells(level1, level2, get) {
+  var total = 0;
+  level1.forEach(function (a) { level2.forEach(function (b) { total += get(a, b); }); });
+  if (!total) return [];
+  var cells = [], x = 0;
+  level1.forEach(function (a) {
+    var aTotal = 0;
+    level2.forEach(function (b) { aTotal += get(a, b); });
+    if (!aTotal) return;
+    var w = aTotal / total, y = 0;
+    level2.forEach(function (b) {
+      var n = get(a, b);
+      if (!n) return;
+      cells.push({ a: a, b: b, n: n, x: x, y: y, w: w, h: n / aTotal });
+      y += n / aTotal;
+    });
+    x += w;
+  });
+  return cells;
+}
+function sortRows(rows) {
+  if (!state.sort || !state.sort.key) return rows;
+  var k = state.sort.key, d = state.sort.dir;
+  return rows.slice().sort(function (a, b) {
+    var va = a[k], vb = b[k];
+    if (k === 'human_checked') { va = va === 'yes' ? 1 : 0; vb = vb === 'yes' ? 1 : 0; }
+    return String(va).localeCompare(String(vb)) * d;
+  });
+}
+function exportCSV(rows) {
+  if (typeof document === 'undefined' || typeof Blob === 'undefined') return;
+  var head = ['id', 'zh', 'en', 'category', 'street_type', 'human_checked', 'confidence'];
+  var lines = [head.join(',')];
+  rows.forEach(function (e) {
+    lines.push(head.map(function (k) {
+      var v = String(e[k] === undefined ? '' : e[k]).replace(/"/g, '""');
+      return /[",\n]/.test(v) ? '"' + v + '"' : v;
+    }).join(','));
+  });
+  var blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tt-street-names-filtered.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+}
+function readUrlState() {
+  if (typeof window === 'undefined' || !window.location) return;
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('q')) state.q = p.get('q');
+  var catKeys = CATS.map(function (c) { return c.key; });
+  if (p.get('cat') && (p.get('cat') === 'all' || catKeys.indexOf(p.get('cat')) !== -1)) state.cat = p.get('cat');
+  if (p.get('checked') === 'yes' || p.get('checked') === 'no') state.checked = p.get('checked');
+  var wc = parseInt(p.get('wc'), 10);
+  if (wc === 20 || wc === 40 || wc === 60) state.wcTop = wc;
+  if (p.get('tm') === 'type') state.treemapBy = 'type';
+}
+function writeUrlState() {
+  if (typeof window === 'undefined' || !window.history || !window.history.replaceState) return;
+  var p = new URLSearchParams();
+  if (state.q) p.set('q', state.q);
+  if (state.cat !== 'all') p.set('cat', state.cat);
+  if (state.checked !== 'all') p.set('checked', state.checked);
+  if (state.wcTop !== 40) p.set('wc', String(state.wcTop));
+  if (state.treemapBy !== 'cat') p.set('tm', state.treemapBy);
+  var qs = p.toString();
+  window.history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
+}
 
 /* ---- rendering ---- */
 function renderTable(rows) {
   var el = document.getElementById('corpusBody');
   if (!el) return;
+  rows = sortRows(rows);
   el.innerHTML = rows.map(function (e) {
     var c = catOf(e.category);
     return '<tr><td>' + esc(e.id) + '</td><td>' + esc(e.zh) + '</td><td>' + esc(e.en) +
@@ -69,6 +152,10 @@ function renderTable(rows) {
       '</td><td>' + (e.human_checked === 'yes' ? '✓' : '–') +
       '</td><td>' + esc(e.confidence) + '</td></tr>';
   }).join('');
+  document.querySelectorAll('th[data-sort]').forEach(function (th) {
+    th.classList.toggle('sorted-asc', !!state.sort && state.sort.key === th.dataset.sort && state.sort.dir === 1);
+    th.classList.toggle('sorted-desc', !!state.sort && state.sort.key === th.dataset.sort && state.sort.dir === -1);
+  });
 }
 function renderBar(counts) {
   var el = document.getElementById('barChart');
@@ -129,10 +216,44 @@ function renderHeatmap(matrix) {
   });
   el.innerHTML = h + '</tbody></table>';
 }
+function renderTreemap(matrix) {
+  var el = document.getElementById('treemap');
+  if (!el) return;
+  var byType = state.treemapBy === 'type';
+  var l1 = byType ? TYPES : CATS.map(function (c) { return c.key; });
+  var l2 = byType ? CATS.map(function (c) { return c.key; }) : TYPES;
+  var get = byType
+    ? function (t, c) { return matrix[c][t] || 0; }
+    : function (c, t) { return matrix[c][t] || 0; };
+  var cells = treemapCells(l1, l2, get);
+  el.innerHTML = cells.map(function (cell) {
+    var cat = byType ? cell.b : cell.a;
+    var c = catOf(cat);
+    var title = (byType ? cell.a : cell.b) + ' \u00b7 ' + (byType ? cell.b : cell.a) + ': ' + cell.n;
+    var showLabel = cell.w > 0.09 && cell.h > 0.14;
+    return '<div class="tm-cell" role="button" tabindex="0" data-cat="' + esc(cat) + '" title="' + esc(title) + '" style="left:' + (cell.x * 100).toFixed(2) + '%;top:' + (cell.y * 100).toFixed(2) + '%;width:' + (cell.w * 100).toFixed(2) + '%;height:' + (cell.h * 100).toFixed(2) + '%;background:' + c.color + '">' + (showLabel ? '<span>' + esc(cell.b) + ' ' + cell.n + '</span>' : '') + '</div>';
+  }).join('');
+}
+function renderWordCloud(list, topN) {
+  var el = document.getElementById('wordCloud');
+  if (!el) return;
+  var top = list.slice(0, topN);
+  if (!top.length) {
+    el.innerHTML = '<p class="muted">' + (lang === 'zh' ? '\u6c92\u6709\u7b26\u5408\u7684\u8a5e\u8a9e\u3002' : 'No words to show.') + '</p>';
+    return;
+  }
+  var max = top[0].n, min = top[top.length - 1].n;
+  el.innerHTML = top.map(function (w) {
+    var size = max > min ? 13 + 22 * (Math.log(w.n) - Math.log(min)) / (Math.log(max) - Math.log(min)) : 24;
+    return '<span class="wc-word" role="button" tabindex="0" data-word="' + esc(w.word) + '" style="font-size:' + size.toFixed(0) + 'px" title="' + esc(w.word) + ': ' + w.n + '">' + esc(w.word) + '</span>';
+  }).join(' ');
+}
 function renderAll() {
   if (!DATA) return;
   var filtered = filterEntries(DATA, state);
   var counts = countByCategory(filtered);
+  renderTreemap(heatmapMatrix(filtered));
+  renderWordCloud(wordFreq(filtered), state.wcTop);
   var rc = document.getElementById('resultCount');
   if (rc) {
     rc.textContent = lang === 'zh'
@@ -146,6 +267,7 @@ function renderAll() {
   document.querySelectorAll('.chip[data-cat]').forEach(function (chip) {
     chip.classList.toggle('active', chip.dataset.cat === state.cat);
   });
+  writeUrlState();
 }
 function setCat(key) {
   state.cat = key;
@@ -183,16 +305,45 @@ function bindControls() {
   });
   var clear = document.getElementById('clearBtn');
   if (clear) clear.addEventListener('click', function () {
-    state = { q: '', cat: 'all', checked: 'all' };
+    state = { q: '', cat: 'all', checked: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
     if (q) q.value = '';
     if (sel) sel.value = 'all';
+    var wc = document.getElementById('wcTop');
+    if (wc) wc.value = '40';
+    var tm = document.getElementById('tmBy');
+    if (tm) tm.value = 'cat';
     renderAll();
+  });
+  var wc = document.getElementById('wcTop');
+  if (wc) wc.addEventListener('change', function () { state.wcTop = parseInt(wc.value, 10) || 40; renderAll(); });
+  var tm = document.getElementById('tmBy');
+  if (tm) tm.addEventListener('change', function () { state.treemapBy = tm.value === 'type' ? 'type' : 'cat'; renderAll(); });
+  var exp = document.getElementById('exportBtn');
+  if (exp) exp.addEventListener('click', function () { exportCSV(filterEntries(DATA || [], state)); });
+  document.querySelectorAll('th[data-sort]').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var k = th.dataset.sort;
+      if (state.sort.key === k) { state.sort.dir = -state.sort.dir; }
+      else { state.sort = { key: k, dir: 1 }; }
+      renderAll();
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var w = e.target.closest ? e.target.closest('.wc-word') : null;
+    if (w) {
+      state.q = w.dataset.word;
+      var q = document.getElementById('searchBox');
+      if (q) q.value = w.dataset.word;
+      renderAll();
+      var ex = document.getElementById('explorer');
+      if (ex) ex.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
   document.addEventListener('click', function (e) {
     var t = e.target.closest ? e.target.closest('[data-cat]') : null;
     if (!t) return;
     if (t.classList.contains('bar-row') || t.classList.contains('donut-seg') ||
-        t.classList.contains('cell') || t.tagName === 'LI') {
+        t.classList.contains('cell') || t.classList.contains('tm-cell') || t.tagName === 'LI') {
       setCat(t.dataset.cat);
     }
   });
@@ -200,9 +351,18 @@ function bindControls() {
 function init() {
   var btn = document.getElementById('langBtn');
   if (btn) btn.addEventListener('click', function () { applyLang(lang === 'zh' ? 'en' : 'zh'); });
+  readUrlState();
   applyLang(lang, false);
   if (!document.getElementById('explorer')) return;
   bindControls();
+  var q = document.getElementById('searchBox');
+  if (q) q.value = state.q;
+  var sel = document.getElementById('checkedFilter');
+  if (sel) sel.value = state.checked;
+  var wc = document.getElementById('wcTop');
+  if (wc) wc.value = String(state.wcTop);
+  var tm = document.getElementById('tmBy');
+  if (tm) tm.value = state.treemapBy;
   fetch('data/corpus.json').then(function (r) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
@@ -230,5 +390,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { CATS: CATS, TYPES: TYPES, filterEntries: filterEntries, countByCategory: countByCategory, heatmapMatrix: heatmapMatrix };
+  module.exports = { CATS: CATS, TYPES: TYPES, filterEntries: filterEntries, countByCategory: countByCategory, heatmapMatrix: heatmapMatrix, wordFreq: wordFreq, treemapCells: treemapCells, sortRows: sortRows };
 }
