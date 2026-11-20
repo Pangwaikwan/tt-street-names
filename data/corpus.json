@@ -5,10 +5,10 @@
   "sample_seed": 20261205,
   "n": 500,
   "counts": {
-   "混合": 49,
-   "音譯": 377,
+   "混合": 51,
+   "音譯": 374,
    "直譯": 41,
-   "意譯": 33
+   "意譯": 34
   }
  },
  "entries": [
@@ -1697,13 +1697,13 @@
    "zh": "漁安苑道",
    "en": "YUE ON COURT ROAD",
    "source": "Lands Department Road Centreline (CSDI/data.gov.hk), STREETCODE 13705, retrieved 2026-11-19, seed 20261205",
-   "category": "音譯",
+   "category": "混合",
    "human_checked": "no",
    "unit": "street name",
    "key_term": "",
    "notes": "",
    "confidence": "high",
-   "coding_notes": "sound: 漁,安 | dropped: 苑",
+   "coding_notes": "checked 20 Nov: hybrid (漁安 sound + 苑 Court established estate-suffix rendering; cf. 村 Village in ST367)",
    "street_type": "Secondary Road",
    "street_code": "13705"
   },
@@ -2462,13 +2462,13 @@
    "zh": "大圍第十街",
    "en": "TENTH STREET TAI WAI",
    "source": "Lands Department Road Centreline (CSDI/data.gov.hk), STREETCODE 39349, retrieved 2026-11-19, seed 20261205",
-   "category": "音譯",
+   "category": "混合",
    "human_checked": "no",
    "unit": "street name",
    "key_term": "",
    "notes": "",
    "confidence": "high",
-   "coding_notes": "sound: 大圍 | dropped: 第十",
+   "coding_notes": "checked 20 Nov: hybrid (大圍 sound + 第十 meaning; Tenth was dropped by the classifier window match)",
    "street_type": "Track",
    "street_code": "39349"
   },
@@ -5867,13 +5867,13 @@
    "zh": "逸林里",
    "en": "KENSINGTON LANE",
    "source": "Lands Department Road Centreline (CSDI/data.gov.hk), STREETCODE 39550, retrieved 2026-11-19, seed 20261205",
-   "category": "音譯",
+   "category": "意譯",
    "human_checked": "no",
    "unit": "street name",
    "key_term": "",
    "notes": "",
    "confidence": "medium",
-   "coding_notes": "sound: 逸,林",
+   "coding_notes": "checked 20 Nov: free (estate name 逸林首府 = One Hyde Park, parallel to Kensington; no sound link jat-lam vs Kensington; cf. Queensway boundary case and Fairview Park)",
    "street_type": "Secondary Road",
    "street_code": "39550"
   },
