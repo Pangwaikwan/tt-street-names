@@ -202,13 +202,27 @@ function init() {
   if (btn) btn.addEventListener('click', function () { applyLang(lang === 'zh' ? 'en' : 'zh'); });
   applyLang(lang, false);
   if (!document.getElementById('explorer')) return;
-  fetch('data/corpus.json').then(function (r) { return r.json(); }).then(function (json) {
+  bindControls();
+  fetch('data/corpus.json').then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function (json) {
     DATA = json.entries;
-    bindControls();
     renderAll();
-  }).catch(function () {
-    var err = document.getElementById('loadError');
-    if (err) err.style.display = 'block';
+  }).catch(function (err) {
+    var box = document.getElementById('loadError');
+    if (box) box.style.display = 'block';
+    var msg = document.getElementById('loadErrorMsg');
+    if (msg) {
+      var is404 = err && String(err.message).indexOf('404') !== -1;
+      msg.textContent = is404
+        ? (lang === 'zh'
+          ? 'data/corpus.json 唔見咗 — 請檢查 repo 入面有冇 data/ 文件夾，入面要有 corpus.json。'
+          : 'data/corpus.json was not found — check the repository has a data/ folder containing corpus.json.')
+        : (lang === 'zh'
+          ? '語料載入失敗，請檢查網絡連線，或者稍後再試。'
+          : 'The corpus data did not load. Please check your connection and try again.');
+    }
   });
 }
 if (typeof document !== 'undefined') {

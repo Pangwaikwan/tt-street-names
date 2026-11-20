@@ -16,7 +16,7 @@ Static site (HTML + CSS + JS + one JSON data file). No build step, no server.
 ## How to publish on GitHub Pages
 
 1. Create a new public repository on GitHub (any name, e.g. `tt-street-names`).
-2. Upload everything in this folder to the repository (keep the folder structure, so `data/corpus.json` stays under `data/`).
+2. Upload everything in this folder to the repository (keep the folder structure, so `data/corpus.json` stays under `data/`). **Check after uploading: the repository must contain a `data` folder with `corpus.json` inside — without it, the Explorer page shows no entries.** Hidden files such as `.nojekyll` are easy to miss when selecting files; make sure it is uploaded too.
 3. In the repository: Settings → Pages → Build and deployment → Source: **Deploy from a branch** → Branch: **main**, folder **/ (root)** → Save.
 4. Wait about a minute, then open the Pages URL GitHub shows you (looks like `https://<your-username>.github.io/<repo-name>/`).
 5. Submit that Pages URL **and** the repository URL for the project.
