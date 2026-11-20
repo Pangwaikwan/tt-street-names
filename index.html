@@ -23,22 +23,22 @@
 <main id="explorer">
   <div class="card">
     <h2 data-en="Corpus explorer" data-zh="語料瀏覽">Corpus explorer</h2>
-    <p data-en="500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid." data-zh="由地政總署 Road Centreline（CSDI / data.gov.hk，2026 年 11 月 19 日擷取）4,568 條有齊中英文名嘅街入面，固定隨機種子 20261205 抽出嘅 500 條街名。每條都用四分類 codebook 編碼：音譯、直譯、意譯、混合。">500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid.</p>
-    <p class="muted" data-en="Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update." data-zh="撳任何一條 bar、donut 其中一格、legend 或者 heatmap 格仔，就可以篩選下面個表。改 search 或者篩選，三幅圖會一齊更新。">Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update.</p>
+    <p data-en="500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid." data-zh="從地政總署 Road Centreline（CSDI / data.gov.hk，2026 年 11 月 19 日擷取）4,568 條兼具中英文名稱的街道中，以固定隨機種子 20261205 抽出 500 條街名。每條均以四分類 codebook 編碼：音譯、直譯、意譯、混合。">500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid.</p>
+    <p class="muted" data-en="Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update." data-zh="點擊任何一條 bar、donut 其中一格、legend 或 heatmap 格子，即可篩選下方的表格。更改 search 或篩選條件，三幅圖會同步更新。">Click a bar, a donut slice, a legend item or a heatmap cell to filter the table. Change the search or filters and all three charts update.</p>
   </div>
 
   <div class="card" id="loadError" style="display:none">
     <p><strong data-en="The corpus data did not load." data-zh="語料載入失敗。">The corpus data did not load.</strong></p>
-    <p data-en="Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly." data-zh="請用 http(s) 開呢個網站（例如經 GitHub Pages），唔好直接撳開個檔案。">Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly.</p>
+    <p id="loadErrorMsg" data-en="Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly." data-zh="請以 http(s) 開啟本網站（例如經 GitHub Pages），不要直接點擊檔案開啟。">Please open this site over http(s), for example via GitHub Pages, instead of opening the file directly.</p>
   </div>
 
   <div class="card">
     <div class="controls">
-      <input type="search" id="searchBox" data-en-ph="Search Chinese or English name…" data-zh-ph="搜尋中文或者英文街名…" placeholder="Search Chinese or English name…">
+      <input type="search" id="searchBox" data-en-ph="Search Chinese or English name…" data-zh-ph="搜尋中文或英文街名…" placeholder="Search Chinese or English name…">
       <select id="checkedFilter" aria-label="Human checked">
         <option value="all" data-en="Checked: all" data-zh="已核對：全部">Checked: all</option>
-        <option value="yes" data-en="Checked: yes" data-zh="已核對：係">Checked: yes</option>
-        <option value="no" data-en="Checked: no" data-zh="已核對：未">Checked: no</option>
+        <option value="yes" data-en="Checked: yes" data-zh="已核對：是">Checked: yes</option>
+        <option value="no" data-en="Checked: no" data-zh="已核對：否">Checked: no</option>
       </select>
       <button class="btn" id="clearBtn" type="button" data-en="Clear filters" data-zh="清除篩選">Clear filters</button>
     </div>
@@ -50,21 +50,21 @@
       <button class="chip" type="button" data-cat="混合" data-en="Hybrid" data-zh="混合">Hybrid</button>
     </div>
     <p class="muted" id="resultCount" style="margin-top:12px"></p>
-    <p class="small" data-en="Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes." data-zh="已核對狀態：50 條 quality check 未做，所以而家全部顯示「–」。核對完 mark 咗 yes 之後，呢個篩選就會有作用。">Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes.</p>
+    <p class="small" data-en="Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes." data-zh="已核對狀態：50 條 quality check 尚未進行，因此目前全部顯示「–」。核對完成並標記為 yes 後，此篩選即會生效。">Human-checked status: the 50-entry quality check has not been done yet, so all entries currently show “–”. The filter will work once entries are marked yes.</p>
   </div>
 
   <div class="charts">
     <div class="chart-card">
-      <h2 data-en="Entries by category" data-zh="每類有幾多條">Entries by category</h2>
+      <h2 data-en="Entries by category" data-zh="各分類的條目數">Entries by category</h2>
       <div id="barChart"></div>
     </div>
     <div class="chart-card">
-      <h2 data-en="Share by category" data-zh="每類佔幾多">Share by category</h2>
+      <h2 data-en="Share by category" data-zh="各分類的佔比">Share by category</h2>
       <div id="donutChart" class="donut-wrap"></div>
     </div>
     <div class="chart-card full">
       <h2 data-en="Category × street type" data-zh="分類 × 道路類別">Category × street type</h2>
-      <p class="muted" data-en="Counts of the entries currently shown. Street type comes from the Road Centreline record." data-zh="而家顯示緊嗰啲條目嘅數目。道路類別嚟自 Road Centreline 原記錄。">Counts of the entries currently shown. Street type comes from the Road Centreline record.</p>
+      <p class="muted" data-en="Counts of the entries currently shown. Street type comes from the Road Centreline record." data-zh="目前所顯示條目的數目。道路類別來自 Road Centreline 原始記錄。">Counts of the entries currently shown. Street type comes from the Road Centreline record.</p>
       <div id="heatmap"></div>
     </div>
   </div>

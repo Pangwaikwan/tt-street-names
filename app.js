@@ -217,10 +217,10 @@ function init() {
       var is404 = err && String(err.message).indexOf('404') !== -1;
       msg.textContent = is404
         ? (lang === 'zh'
-          ? 'data/corpus.json 唔見咗 — 請檢查 repo 入面有冇 data/ 文件夾，入面要有 corpus.json。'
+          ? 'data/corpus.json 未找到 — 請檢查 repo 內是否有 data/ 文件夾，內含 corpus.json。'
           : 'data/corpus.json was not found — check the repository has a data/ folder containing corpus.json.')
         : (lang === 'zh'
-          ? '語料載入失敗，請檢查網絡連線，或者稍後再試。'
+          ? '語料載入失敗，請檢查網絡連線，或稍後再試。'
           : 'The corpus data did not load. Please check your connection and try again.');
     }
   });
