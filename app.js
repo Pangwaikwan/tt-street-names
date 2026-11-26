@@ -14,7 +14,8 @@ var TYPE_ZH = {
 };
 
 var DATA = null;
-var state = { q: '', cat: 'all', checked: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
+var state = { q: '', cat: 'all', checked: 'all', region: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
+var REGION_ZH = { 'Hong Kong Island': '\u6e2f\u5cf6', 'Kowloon': '\u4e5d\u9f8d', 'New Territories': '\u65b0\u754c' };
 var lang = 'en';
 try { lang = localStorage.getItem('tt-lang') || 'en'; } catch (e) { lang = 'en'; }
 
@@ -33,6 +34,7 @@ function filterEntries(entries, st) {
   return entries.filter(function (e) {
     if (st.cat !== 'all' && e.category !== st.cat) return false;
     if (st.checked !== 'all' && e.human_checked !== st.checked) return false;
+    if (st.region !== 'all' && e.region !== st.region) return false;
     if (q && e.zh.toLowerCase().indexOf(q) === -1 &&
         e.en.toLowerCase().indexOf(q) === -1 &&
         e.id.toLowerCase().indexOf(q) === -1) return false;
@@ -99,7 +101,7 @@ function sortRows(rows) {
 }
 function exportCSV(rows) {
   if (typeof document === 'undefined' || typeof Blob === 'undefined') return;
-  var head = ['id', 'zh', 'en', 'category', 'street_type', 'human_checked', 'confidence'];
+  var head = ['id', 'zh', 'en', 'category', 'street_type', 'region', 'human_checked', 'confidence'];
   var lines = [head.join(',')];
   rows.forEach(function (e) {
     lines.push(head.map(function (k) {
@@ -123,6 +125,7 @@ function readUrlState() {
   var catKeys = CATS.map(function (c) { return c.key; });
   if (p.get('cat') && (p.get('cat') === 'all' || catKeys.indexOf(p.get('cat')) !== -1)) state.cat = p.get('cat');
   if (p.get('checked') === 'yes' || p.get('checked') === 'no') state.checked = p.get('checked');
+  if (p.get('region') === 'Hong Kong Island' || p.get('region') === 'Kowloon' || p.get('region') === 'New Territories') state.region = p.get('region');
   var wc = parseInt(p.get('wc'), 10);
   if (wc === 20 || wc === 40 || wc === 60) state.wcTop = wc;
   if (p.get('tm') === 'type') state.treemapBy = 'type';
@@ -133,6 +136,7 @@ function writeUrlState() {
   if (state.q) p.set('q', state.q);
   if (state.cat !== 'all') p.set('cat', state.cat);
   if (state.checked !== 'all') p.set('checked', state.checked);
+  if (state.region !== 'all') p.set('region', state.region);
   if (state.wcTop !== 40) p.set('wc', String(state.wcTop));
   if (state.treemapBy !== 'cat') p.set('tm', state.treemapBy);
   var qs = p.toString();
@@ -149,6 +153,7 @@ function renderTable(rows) {
     return '<tr><td>' + esc(e.id) + '</td><td>' + esc(e.zh) + '</td><td>' + esc(e.en) +
       '</td><td><span class="cat-tag" style="background:' + c.color + '">' + esc(e.category) +
       ' · ' + esc(c.en) + '</span></td><td>' + esc(e.street_type) +
+      '</td><td>' + esc(lang === 'zh' && REGION_ZH[e.region] ? REGION_ZH[e.region] : e.region) +
       '</td><td>' + (e.human_checked === 'yes' ? '✓' : '–') +
       '</td><td>' + esc(e.confidence) + '</td></tr>';
   }).join('');
@@ -248,12 +253,48 @@ function renderWordCloud(list, topN) {
     return '<span class="wc-word" role="button" tabindex="0" data-word="' + esc(w.word) + '" style="font-size:' + size.toFixed(0) + 'px" title="' + esc(w.word) + ': ' + w.n + '">' + esc(w.word) + '</span>';
   }).join(' ');
 }
+var MAP = null, MARKERS = null;
+function renderMap(entries) {
+  var el = document.getElementById('map');
+  if (!el) return;
+  if (typeof L === 'undefined') {
+    el.innerHTML = '<p class="muted">' + (lang === 'zh' ? '\u5730\u5716\u672a\u80fd\u8f09\u5165\uff08\u9700\u8981\u9023\u63a5 Leaflet \u4f3a\u670d\u5668\uff09\u3002' : 'The map could not load (it needs the Leaflet library).') + '</p>';
+    return;
+  }
+  if (!MAP) {
+    MAP = L.map('map').setView([22.32, 114.17], 11);
+    var landsd = L.tileLayer('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/WGS84/{z}/{x}/{y}.png', {
+      maxZoom: 18, attribution: 'Map data \u00a9 Lands Department, HKSAR Government'
+    }).addTo(MAP);
+    var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '\u00a9 OpenStreetMap contributors'
+    });
+    L.control.layers({ 'Lands Department': landsd, 'OpenStreetMap': osm }).addTo(MAP);
+    MARKERS = L.layerGroup().addTo(MAP);
+  }
+  MARKERS.clearLayers();
+  var bounds = [];
+  entries.forEach(function (e) {
+    if (e.lat === undefined || e.lon === undefined) return;
+    var m = L.circleMarker([e.lat, e.lon], {
+      radius: 5, color: '#fff', weight: 1, fillColor: catOf(e.category).color, fillOpacity: 0.9
+    });
+    m.bindPopup('<b>' + esc(e.zh) + '</b><br>' + esc(e.en) + '<br>' + esc(e.id) + ' \u00b7 ' + esc(e.category) + ' \u00b7 ' + esc(e.region));
+    m.addTo(MARKERS);
+    bounds.push([e.lat, e.lon]);
+  });
+  if (!renderMap._fitted && bounds.length) {
+    MAP.fitBounds(bounds, { padding: [20, 20] });
+    renderMap._fitted = true;
+  }
+}
 function renderAll() {
   if (!DATA) return;
   var filtered = filterEntries(DATA, state);
   var counts = countByCategory(filtered);
   renderTreemap(heatmapMatrix(filtered));
   renderWordCloud(wordFreq(filtered), state.wcTop);
+  renderMap(filtered);
   var rc = document.getElementById('resultCount');
   if (rc) {
     rc.textContent = lang === 'zh'
@@ -300,14 +341,18 @@ function bindControls() {
   if (q) q.addEventListener('input', function () { state.q = q.value; renderAll(); });
   var sel = document.getElementById('checkedFilter');
   if (sel) sel.addEventListener('change', function () { state.checked = sel.value; renderAll(); });
+  var reg = document.getElementById('regionFilter');
+  if (reg) reg.addEventListener('change', function () { state.region = reg.value; renderAll(); });
   document.querySelectorAll('.chip[data-cat]').forEach(function (chip) {
     chip.addEventListener('click', function () { setCat(chip.dataset.cat); });
   });
   var clear = document.getElementById('clearBtn');
   if (clear) clear.addEventListener('click', function () {
-    state = { q: '', cat: 'all', checked: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
+    state = { q: '', cat: 'all', checked: 'all', region: 'all', wcTop: 40, treemapBy: 'cat', sort: { key: null, dir: 1 } };
     if (q) q.value = '';
     if (sel) sel.value = 'all';
+    var reg = document.getElementById('regionFilter');
+    if (reg) reg.value = 'all';
     var wc = document.getElementById('wcTop');
     if (wc) wc.value = '40';
     var tm = document.getElementById('tmBy');
@@ -359,6 +404,8 @@ function init() {
   if (q) q.value = state.q;
   var sel = document.getElementById('checkedFilter');
   if (sel) sel.value = state.checked;
+  var reg = document.getElementById('regionFilter');
+  if (reg) reg.value = state.region;
   var wc = document.getElementById('wcTop');
   if (wc) wc.value = String(state.wcTop);
   var tm = document.getElementById('tmBy');

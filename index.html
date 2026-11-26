@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hong Kong Street-Name Translation — Corpus Explorer</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="app.js" defer></script>
 </head>
 <body>
@@ -24,7 +26,7 @@
   <div class="card">
     <h2 data-en="Corpus explorer" data-zh="語料瀏覽">Corpus explorer</h2>
     <p data-en="500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid." data-zh="從地政總署 Road Centreline（CSDI / data.gov.hk，2026 年 11 月 19 日擷取）4,568 條兼具中英文名稱的街道中，以固定隨機種子 20261205 抽出 500 條街名。每條均以四分類 codebook 編碼：音譯、直譯、意譯、混合。">500 street names sampled from the 4,568 bilingual streets in the Lands Department Road Centreline (CSDI / data.gov.hk, retrieved 19 November 2026). Fixed random seed 20261205. Each entry is coded with the four-category codebook: Transliteration, Literal, Free, Hybrid.</p>
-    <p class="muted" data-en="Click a bar, a donut slice, a legend item, a heatmap cell or a treemap cell to filter the table; click a word in the word cloud to search for it. Change the search or filters and all five charts update." data-zh="點擊任何一條 bar、donut 其中一格、legend、heatmap 格子或 treemap 格子，即可篩選下方的表格；點擊 word cloud 中的詞語，即可搜尋該詞。更改 search 或篩選條件，五幅圖會同步更新。">Click a bar, a donut slice, a legend item, a heatmap cell or a treemap cell to filter the table; click a word in the word cloud to search for it. Change the search or filters and all five charts update.</p>
+    <p class="muted" data-en="Click a bar, a donut slice, a legend item, a heatmap cell or a treemap cell to filter the table; click a word in the word cloud to search for it; click a dot on the map for the street name. Change the search or filters and all six charts update." data-zh="點擊任何一條 bar、donut 其中一格、legend、heatmap 格子或 treemap 格子，即可篩選下方的表格；點擊 word cloud 中的詞語，即可搜尋該詞；點擊地圖上的點，可查看街名。更改 search 或篩選條件，六幅圖會同步更新。">Click a bar, a donut slice, a legend item, a heatmap cell or a treemap cell to filter the table; click a word in the word cloud to search for it; click a dot on the map for the street name. Change the search or filters and all six charts update.</p>
   </div>
 
   <div class="card" id="loadError" style="display:none">
@@ -39,6 +41,12 @@
         <option value="all" data-en="Checked: all" data-zh="已核對：全部">Checked: all</option>
         <option value="yes" data-en="Checked: yes" data-zh="已核對：是">Checked: yes</option>
         <option value="no" data-en="Checked: no" data-zh="已核對：否">Checked: no</option>
+      </select>
+      <select id="regionFilter" aria-label="Region">
+        <option value="all" data-en="Region: all" data-zh="地區：全部">Region: all</option>
+        <option value="Hong Kong Island" data-en="Region: Hong Kong Island" data-zh="地區：港島">Region: Hong Kong Island</option>
+        <option value="Kowloon" data-en="Region: Kowloon" data-zh="地區：九龍">Region: Kowloon</option>
+        <option value="New Territories" data-en="Region: New Territories" data-zh="地區：新界">Region: New Territories</option>
       </select>
       <button class="btn" id="clearBtn" type="button" data-en="Clear filters" data-zh="清除篩選">Clear filters</button>
     </div>
@@ -95,6 +103,12 @@
       </div>
       <div id="wordCloud" class="wordcloud"></div>
     </div>
+    <div class="chart-card full">
+      <h2 data-en="Map: where the streets are" data-zh="地圖：街名分佈">Map: where the streets are</h2>
+      <p class="caption" data-en="Question: Does the translation strategy vary by where the street is?" data-zh="問題：翻譯策略是否隨街道所在地區而變化？">Question: Does the translation strategy vary by where the street is?</p>
+      <div id="map"></div>
+      <p class="muted" data-en="Each dot is one street, coloured by category. Click a dot for the street name. The map shows only the entries matching the current search and filters. Coordinates are the midpoint of the longest Road Centreline segment for each street; basemap © Lands Department, HKSAR Government." data-zh="每點代表一條街，按分類上色。點擊查看街名。地圖只顯示符合目前搜尋及篩選條件的條目。座標取自每條街最長 Road Centreline 路段的中點；底圖 © 地政總署。">Each dot is one street, coloured by category. Click a dot for the street name. The map shows only the entries matching the current search and filters. Coordinates are the midpoint of the longest Road Centreline segment for each street; basemap © Lands Department, HKSAR Government.</p>
+    </div>
   </div>
 
   <div class="card">
@@ -108,6 +122,7 @@
           <th class="sortable" data-sort="en" data-en="English name" data-zh="英文街名">English name</th>
           <th class="sortable" data-sort="category" data-en="Category" data-zh="分類">Category</th>
           <th class="sortable" data-sort="street_type" data-en="Street type" data-zh="道路類別">Street type</th>
+          <th class="sortable" data-sort="region" data-en="Region" data-zh="地區">Region</th>
           <th class="sortable" data-sort="human_checked" data-en="Checked" data-zh="已核對">Checked</th>
           <th class="sortable" data-sort="confidence" data-en="Confidence" data-zh="信心">Confidence</th>
         </tr></thead>

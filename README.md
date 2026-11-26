@@ -6,12 +6,12 @@ Static site (HTML + CSS + JS + one JSON data file). No build step, no server.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | Corpus explorer: search, category + human\_checked filters, 5 linked visualisations (bar chart, donut, category × street-type heatmap, treemap, word cloud), full 500-entry table with sorting and CSV export |
+| `index.html` | Corpus explorer: search, category + human\_checked + region filters, 6 linked visualisations (bar chart, donut, category × street-type heatmap, treemap, word cloud, map), full 500-entry table with sorting and CSV export |
 | `codebook.html` | Codebook v0.2 (definitions are **DRAFT** — rewrite in your own words, brief 0.3.3) |
-| `report.html` | Learning report (draft): method, results, change log, QC status, AI declaration. §4 "What I learned" is a placeholder for you to write |
+| `report.html` | Learning report (draft): origin, background, gap, questions, method, analysis (incl. map and historical factors), conclusion, QC status, AI declaration. §8 "What I learned" is a placeholder for you to write |
 | `style.css` | Shared styles |
-| `app.js` | Explorer logic + EN / 繁體中文 toggle (EN is the default) |
-| `data/corpus.json` | The 500 coded entries (from `corpus_sample_500_coded_DRAFT.csv`, plus street type from the Road Centreline record) |
+| `app.js` | Explorer logic + EN / 繁體中文 toggle (EN is the default). The map uses Leaflet (loaded from a CDN) with Lands Department basemap tiles |
+| `data/corpus.json` | The 500 coded entries (from `corpus_sample_500_coded_DRAFT.csv`, plus street type from the Road Centreline record, plus latitude, longitude and region from the Road Centreline geometry) |
 
 ## How to publish on GitHub Pages
 
