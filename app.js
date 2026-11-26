@@ -253,7 +253,12 @@ function renderWordCloud(list, topN) {
     return '<span class="wc-word" role="button" tabindex="0" data-word="' + esc(w.word) + '" style="font-size:' + size.toFixed(0) + 'px" title="' + esc(w.word) + ': ' + w.n + '">' + esc(w.word) + '</span>';
   }).join(' ');
 }
-var MAP = null, MARKERS = null;
+var MAP = null, MARKERS = null, LAST_BOUNDS = [];
+function refitMap() {
+  if (!MAP) return;
+  MAP.invalidateSize();
+  if (LAST_BOUNDS.length) MAP.fitBounds(LAST_BOUNDS, { padding: [20, 20] });
+}
 function renderMap(entries) {
   var el = document.getElementById('map');
   if (!el) return;
@@ -271,6 +276,18 @@ function renderMap(entries) {
     });
     L.control.layers({ 'Lands Department': landsd, 'OpenStreetMap': osm }).addTo(MAP);
     MARKERS = L.layerGroup().addTo(MAP);
+    // The map sits below the fold when the page first loads, so Leaflet can
+    // measure its box before the layout settles and end up grey with all
+    // markers bunched in the centre. Re-measure and re-fit the first time
+    // the map scrolls into view, and again on resize / full page load.
+    if ('IntersectionObserver' in window) {
+      var mapObs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { refitMap(); mapObs.disconnect(); }
+      }, { threshold: 0.05 });
+      mapObs.observe(el);
+    }
+    window.addEventListener('resize', function () { if (MAP) MAP.invalidateSize(); });
+    window.addEventListener('load', refitMap);
   }
   MARKERS.clearLayers();
   var bounds = [];
@@ -283,6 +300,7 @@ function renderMap(entries) {
     m.addTo(MARKERS);
     bounds.push([e.lat, e.lon]);
   });
+  LAST_BOUNDS = bounds;
   if (!renderMap._fitted && bounds.length) {
     MAP.fitBounds(bounds, { padding: [20, 20] });
     renderMap._fitted = true;

@@ -24,7 +24,7 @@ Static site (HTML + CSS + JS + one JSON data file). No build step, no server.
 ## Before you submit
 
 - [ ] Rewrite the 4 codebook definitions in your own words (`codebook.html` + the codebook docx). The site currently shows the draft definitions with a DRAFT banner.
-- [ ] Review the 28 medium-confidence entries (see the coding report) and change any code you disagree with — then regenerate `data/corpus.json` from the edited CSV.
+- [x] Review the 28 medium-confidence entries — done 26 Nov 2026: 27 confirmed and raised to high confidence; only ST391 逸林里 stays medium (see the Report, §6, for why).
 - [ ] Hand-check the QC 50 (`corpus_qc50_seed20261206.csv`), mark `human_checked = yes`, record the errors found, and update the Report page §1 and §4.
 - [ ] Write §4 "What I learned" in your own words.
 - [ ] Check the charts against the table (brief tip: AI can make charts that look right and are wrong). The charts on this site are computed from the same `corpus.json` as the table, so they agree by construction — re-check after any data edit.
