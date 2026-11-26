@@ -120,7 +120,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.48685,
    "lon": 114.05537,
    "region": "New Territories"
@@ -168,7 +168,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.32768,
    "lon": 114.17794,
    "region": "Kowloon"
@@ -660,7 +660,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.41915,
    "lon": 113.92457,
    "region": "New Territories"
@@ -1092,7 +1092,7 @@
    "category": "音譯",
    "street_type": "Main Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.27332,
    "lon": 114.17748,
    "region": "Hong Kong Island"
@@ -1152,7 +1152,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.27843,
    "lon": 114.18065,
    "region": "Hong Kong Island"
@@ -1440,7 +1440,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.44247,
    "lon": 114.08213,
    "region": "New Territories"
@@ -1632,7 +1632,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.28133,
    "lon": 114.15264,
    "region": "Hong Kong Island"
@@ -1692,7 +1692,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.32679,
    "lon": 114.18528,
    "region": "Kowloon"
@@ -1716,7 +1716,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.49889,
    "lon": 114.11103,
    "region": "New Territories"
@@ -2484,7 +2484,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.50243,
    "lon": 114.1022,
    "region": "New Territories"
@@ -2736,7 +2736,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.32372,
    "lon": 114.17826,
    "region": "Kowloon"
@@ -2868,7 +2868,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.27324,
    "lon": 114.15461,
    "region": "Hong Kong Island"
@@ -3000,7 +3000,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.2488,
    "lon": 114.15476,
    "region": "Hong Kong Island"
@@ -3072,7 +3072,7 @@
    "category": "音譯",
    "street_type": "Main Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.28147,
    "lon": 114.15698,
    "region": "Hong Kong Island"
@@ -3132,7 +3132,7 @@
    "category": "音譯",
    "street_type": "Main Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.37375,
    "lon": 114.12246,
    "region": "New Territories"
@@ -3192,7 +3192,7 @@
    "category": "混合",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.26178,
    "lon": 114.2408,
    "region": "Hong Kong Island"
@@ -3564,7 +3564,7 @@
    "category": "混合",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.25997,
    "lon": 114.14835,
    "region": "Hong Kong Island"
@@ -4212,7 +4212,7 @@
    "category": "音譯",
    "street_type": "Track",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.27622,
    "lon": 114.16729,
    "region": "Hong Kong Island"
@@ -4260,7 +4260,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.22603,
    "lon": 114.20097,
    "region": "Hong Kong Island"
@@ -4284,7 +4284,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.48651,
    "lon": 114.05699,
    "region": "New Territories"
@@ -4428,7 +4428,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.27054,
    "lon": 114.12904,
    "region": "Hong Kong Island"
@@ -4440,7 +4440,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.29711,
    "lon": 114.17363,
    "region": "Kowloon"
@@ -4860,7 +4860,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.50215,
    "lon": 114.10369,
    "region": "New Territories"
@@ -4908,7 +4908,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.4837,
    "lon": 114.05653,
    "region": "New Territories"
@@ -5652,7 +5652,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.34385,
    "lon": 114.17837,
    "region": "Kowloon"
@@ -5796,7 +5796,7 @@
    "category": "音譯",
    "street_type": "Secondary Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.28524,
    "lon": 114.136,
    "region": "Hong Kong Island"
@@ -6012,7 +6012,7 @@
    "category": "音譯",
    "street_type": "Main Road",
    "human_checked": "no",
-   "confidence": "medium",
+   "confidence": "high",
    "lat": 22.28021,
    "lon": 114.18883,
    "region": "Hong Kong Island"
